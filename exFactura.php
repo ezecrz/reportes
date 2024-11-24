@@ -1,8 +1,9 @@
 <?php 
 //activamos almacenamiento en el buffer
 ob_start();
-if (strlen(session_id())<1) 
+if (strlen(session_id())<1){
   session_start();
+}
 
 if (!isset($_SESSION['nombre'])) {
   echo "debe ingresar al sistema correctamente para visualizar el reporte";
@@ -11,7 +12,7 @@ if (!isset($_SESSION['nombre'])) {
 if ($_SESSION['ventas']==1) {
 
 //incluimos el archivo factura
-require('Factura.php');
+require'Factura.php';
 
 //establecemos los datos de la empresa
 $logo="logo.png";
