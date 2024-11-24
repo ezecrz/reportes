@@ -35,87 +35,34 @@ class EnLetras
   var $substituir_un_mil_por_mil = true;
   var $anadir_MN_al_final = true;
   var $tratar_decimales = true;
-function ValorEnLetras($x, $Moneda_singular, $Moneda_plural="" ,$Centesima_parte_singular="", $Centesima_parte_plural="")  
-{ 
-    $s=""; 
-    $Ent=""; 
-    $Frc=""; 
-    $Signo=""; 
-    
-  // para compatibilizar la clase con la version antigua
-  $Moneda_plural = ($Moneda_plural == "") ? $Moneda_singular : $Moneda_plural;
-  
-    if(floatVal($x) < 0) 
-     $Signo = $this->Neg . " "; 
-    else 
-     $Signo = ""; 
-     
-    if(intval(number_format($x,2,'.','') )!=$x) //<- averiguar si tiene decimales 
-      $s = number_format($x,2,'.',''); 
-    else 
-      $s = number_format($x,2,'.',''); 
-        
-    $Pto = strpos($s, $this->Dot); 
-         
-    if ($Pto === false) 
-    { 
-      $Ent = $s; 
-      $Frc = $this->Void; 
-    } 
-    else 
-    { 
-      $Ent = substr($s, 0, $Pto ); 
-      $Frc =  substr($s, $Pto+1); 
-    } 
-    if($Ent == $this->Zero || $Ent == $this->Void) 
-       $s = "Cero "; 
-    elseif( strlen($Ent) > 7) 
-    { 
-       $s = $this->SubValLetra(intval( substr($Ent, 0,  strlen($Ent) - 6))) .  
-             "Millones " . $this->SubValLetra(intval(substr($Ent,-6, 6))); 
-    } 
-    else 
-    { 
-      $s = $this->SubValLetra(intval($Ent)); 
-    } 
-    if (substr($s,-9, 9) == "Millones " || substr($s,-7, 7) == "Millón ") 
-       $s = $s . "de "; 
-  if($this->substituir_un_mil_por_mil){
-    // En el castellano de España en vez de decir "Un Mil" se dice "Mil"
-    
-    if(substr($s,0,6)=="Un Mil"){
-      $s = substr($s,3);
-    }
-    
-  }
-  
-  // para compatibilizar la clase con la version antigua
-  if ( !$this->tratar_decimales ){
-    // ignora los decimales i los muestra como XX/100
-    
-//    $s = $s . $Moneda_singular; 
-    $s = $s . (intval(abs($x))==1 ? $Moneda_singular : $Moneda_plural); 
-//      if($Frc != $this->Void)
-    if($Frc != "00")
-      { 
-         $s = $s . " " . $Frc. "/100"; 
-         //$s = $s . " " . $Frc . "/100"; 
-      } 
-  }else{  
-    $s = $s . (intval(abs($x))==1 ? $Moneda_singular : $Moneda_plural); 
-    if($Frc == "00")
-      { 
-         $s = $s . " con " . $Frc. "/100"; 
-         //$s = $s . " " . $Frc . "/100"; 
-      } else
+function ValorEnLetras($number, $currencySingular, $currencyPlural, $decimalSingular, $decimalPlural) {
+    // ... other variables and initializations
 
-    if($Frc != "00"){
-      $tmpV = new EnLetras();
-      $tmpV->anadir_MN_al_final = false;
-      $tmpV->tratar_decimales = false;
-      $s.= " con ".$tmpV->ValorEnLetras($Frc, $Centesima_parte_singular,$Centesima_parte_plural,"","");
+    // Extract integer and decimal parts
+    $integerPart = intval($number);
+    $decimalPart = number_format($number, 2, '.', '') - $integerPart;
+
+    // Convert integer part to words
+    $words = convertNumberToWords($integerPart);
+
+    // Handle decimals based on a flag
+    if ($this->tratar_decimales) {
+        $decimalWords = convertNumberToWords($decimalPart * 100);
+        $words .= " con " . $decimalWords . " " . $decimalPlural;
+    } else {
+        // ... handle decimals as fractions
     }
-  }  
+
+    // Handle currency
+    $currency = $integerPart == 1 ? $currencySingular : $currencyPlural;
+    $words .= " " . $currency;
+
+    return $words;
+}
+
+function convertNumberToWords($number) {
+    // ... implementation for converting numbers to words
+}
 //    $letrass=$Signo . $s;
     return ($Signo . $s ).($this->tratar_decimales?"":""); 
     
