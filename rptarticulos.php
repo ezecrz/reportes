@@ -1,9 +1,9 @@
 <?php 
 //activamos almacenamiento en el buffer
 ob_start();
-if (strlen(session_id())<1) 
+if (strlen(session_id())<1){
   session_start();
-
+}
 if (!isset($_SESSION['nombre'])) {
   echo "debe ingresar al sistema correctamente para vosualizar el reporte";
 }else{
@@ -11,7 +11,7 @@ if (!isset($_SESSION['nombre'])) {
 if ($_SESSION['almacen']==1) {
 
 //incluimos a la clase PDF_MC_Table
-require('PDF_MC_Table.php');
+require'PDF_MC_Table.php';
 
 //instanciamos la clase para generar el documento pdf
 $pdf=new PDF_MC_Table();
