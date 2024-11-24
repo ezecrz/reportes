@@ -12,7 +12,7 @@ if (!isset($_SESSION['nombre'])) {
 if ($_SESSION['ventas']==1) {
 
 //incluimos el archivo factura
-require'Factura.php';
+require_once'Factura.php';
 
 //establecemos los datos de la empresa
 $logo="logo.png";
