@@ -86,14 +86,16 @@ $email = "angelinos257@gmail.com";
 		<?php
 		$rsptad = $venta->ventadetalles($_GET["id"]);
 		$cantidad=0;
+		const TD_END = '</td>';
+
 		while ($regd = $rsptad->fetch_object()) {
-		 	echo "<tr>";
-		 	echo "<td>".$regd->cantidad."</td>";
-		 	echo "<td>".$regd->articulo."</td>";
-		 	echo "<td align='right'>S/. ".$regd->subtotal."</td>";
-		 	echo "</tr>";
-		 	$cantidad+=$regd->cantidad;
-		 } 
+    		echo "<tr>";
+   		 echo "<td>{$regd->cantidad}" . TD_END;
+    		echo "<td>{$regd->articulo}" . TD_END;
+    		echo "<td align='right'>S/. {$regd->subtotal}" . TD_END;
+    		echo "</tr>";
+    		$cantidad += $regd->cantidad;
+		}
 
 		 ?>
 		 <!--mostramos los totales de la venta-->
