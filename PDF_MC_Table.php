@@ -1,5 +1,5 @@
 <?php
-require('../fpdf181/fpdf.php');
+require'../fpdf181/fpdf.php';
 
 class PDF_MC_Table extends FPDF
 {
@@ -22,9 +22,10 @@ function Row($data)
 {
     //Calculate the height of the row
     $nb=0;
-    for($i=0;$i<count($data);$i++)
+    for($i=0;$i<count($data);$i++){
         $nb=max($nb,$this->NbLines($this->widths[$i],$data[$i]));
     $h=5*$nb;
+    }
     //Issue a page break first if needed
     $this->CheckPageBreak($h);
     //Draw the cells of the row
@@ -49,58 +50,59 @@ function Row($data)
 function CheckPageBreak($h)
 {
     //If the height h would cause an overflow, add a new page immediately
-    if($this->GetY()+$h>$this->PageBreakTrigger)
+    if($this->GetY()+$h>$this->PageBreakTrigger){
         $this->AddPage($this->CurOrientation);
+    }
 }
 
-function NbLines($w,$txt)
-{
-    //Computes the number of lines a MultiCell of width w will take
-    $cw=&$this->CurrentFont['cw'];
-    if($w==0)
-        $w=$this->w-$this->rMargin-$this->x;
-    $wmax=($w-2*$this->cMargin)*1000/$this->FontSize;
-    $s=str_replace("\r",'',$txt);
-    $nb=strlen($s);
-    if($nb>0 and $s[$nb-1]=="\n")
-        $nb--;
-    $sep=-1;
-    $i=0;
-    $j=0;
-    $l=0;
-    $nl=1;
-    while($i<$nb)
-    {
-        $c=$s[$i];
-        if($c=="\n")
-        {
-            $i++;
-            $sep=-1;
-            $j=$i;
-            $l=0;
-            $nl++;
+function NbLines($w, $txt) {
+    // Handle empty text or single-line text
+    if (empty($txt) || strlen($txt) <= 1) {
+        return 1;
+    }
+
+    $cw = &$this->CurrentFont['cw'];
+    $wMax = ($w - 2 * $this->cMargin) * 1000 / $this->FontSize;
+
+    $lines = 1;
+    $currentLineWidth = 0;
+    $lastSpace = -1;
+
+    for ($i = 0; $i < strlen($txt); $i++) {
+        $char = $txt[$i];
+
+        if ($char === "\n") {
+            $lines++;
+            $currentLineWidth = 0;
+            $lastSpace = -1;
             continue;
         }
-        if($c==' ')
-            $sep=$i;
-        $l+=$cw[$c];
-        if($l>$wmax)
-        {
-            if($sep==-1)
-            {
-                if($i==$j)
-                    $i++;
+
+        $charWidth = $cw[$char];
+        $currentLineWidth += $charWidth;
+
+        if ($currentLineWidth > $wMax) {
+            if ($lastSpace !== -1) {
+                $i = $lastSpace;
             }
-            else
-                $i=$sep+1;
-            $sep=-1;
-            $j=$i;
-            $l=0;
-            $nl++;
+            $lines++;
+            $currentLineWidth = 0;
+            $lastSpace = -1;
+        } else if ($char === ' ') {
+            $lastSpace = $i;
         }
-        else
-            $i++;
     }
+
+    return $lines;
+}
+
+function calculateWordWidth($word, $cw) {
+    $width = 0;
+    for ($i = 0; $i < strlen($word); $i++) {
+        $width += $cw[$word[$i]];
+    }
+    return $width;
+}
     return $nl;
 }
 }
